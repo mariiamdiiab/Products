@@ -18,24 +18,36 @@ public class Main {
     }
 
     public void addProductsToCart(List<String> productNames) {
+
+        List<String> validNames = new java.util.ArrayList<>();
+        for (int i = 0; i < productNames.size(); i++) {
+            String name = productNames.get(i);
+            if (name.length() < 3) {
+                System.out.println("Skipping invalid name (too short): " + name);
+            } else {
+                validNames.add(name);
+            }
+        }
+
         List<WebElement> products = driver.findElements(By.xpath("//div[@class='product']"));
 
         for (int i = 0; i < products.size(); i++) {
             WebElement product = products.get(i);
-            String productName = product.findElement(By.className("product-name")).getText();
+            String productName = product.findElement(By.className("product-name")).getText().toLowerCase();
 
-            for (int j = 0; j < productNames.size(); j++) {
-                String targetName = productNames.get(j);
-
-                if (productName.equalsIgnoreCase(targetName)) {
+            for (int j = 0; j < validNames.size(); j++) {
+                String targetName = validNames.get(j);
+                if (productName.contains(targetName.toLowerCase())) {
                     WebElement addToCartBtn = product.findElement(By.tagName("button"));
                     addToCartBtn.click();
-                    System.out.println("Added to cart: " + targetName);
+                    System.out.println("Added to cart: " + productName);
                     break;
                 }
             }
         }
     }
+
+
 
     public void openCart() {
         driver.findElement(By.xpath("//a[@class='cart-icon']")).click();
@@ -61,11 +73,13 @@ public class Main {
         List<String> productsToBuy = Arrays.asList(
                 "Cucumber - 1 Kg",
                 "Carrot - 1 Kg",
-                "Beans - 1 Kg"
+                "Beans - 1 Kg",
+                "Ap",
+                "Corn - 1 Kg"
         );
 
         main.addProductsToCart(productsToBuy);
-        main.openCart(); 
+        main.openCart();
         main.addPromo();
         main.teardown();
     }
